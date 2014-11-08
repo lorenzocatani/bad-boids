@@ -9,11 +9,16 @@ import random
 
 # Deliberately terrible code for teaching purposes
 
-boids_x=[random.uniform(-450,50.0) for x in range(50)]
-boids_y=[random.uniform(300.0,600.0) for x in range(50)]
-boid_x_velocities=[random.uniform(0,10.0) for x in range(50)]
-boid_y_velocities=[random.uniform(-20.0,20.0) for x in range(50)]
-boids=(boids_x,boids_y,boid_x_velocities,boid_y_velocities)
+
+
+def movement (a,b):       con qualche commento che spiega?
+     random.uniform(a,b) for x in range(50)
+x = movement(-450,50.0) 
+y = movement(300.0,50.0)
+vel_x = movement(0,10.0)
+vel_y = movement(-20.0,20.0)
+x = movement(-450,50.0)
+boids =(x,y,vel_x,vel_y)
 
 def update_boids(boids):
 	xs,ys,xvs,yvs=boids
