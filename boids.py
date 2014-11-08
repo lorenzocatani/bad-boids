@@ -3,6 +3,10 @@ A deliberately bad implementation of [Boids](http://dl.acm.org/citation.cfm?doid
 for use as an exercise on refactoring.
 """
 
+import matplotlib
+
+matplotlib.use('TkAgg')
+
 from matplotlib import pyplot as plt
 from matplotlib import animation
 import random
@@ -12,14 +16,15 @@ import random
 
 
 def movement (a,b):       #con qualche commento che spiega?
- r = random.uniform(a,b) 
+ r = []
  for k in range(50):
-  return r
+  r.append(random.uniform(a,b)) 
+ return r
   
-xs = [movement(-450,50.0)] 
-ys = [movement(300.0,50.0)]
-xvs = [movement(0,10.0)]
-yvs = [movement(-20.0,20.0)]
+xs = movement(-450,50.0) 
+ys = movement(300.0,50.0)
+xvs = movement(0,10.0)
+yvs = movement(-20.0,20.0)
 boids =(xs,ys,xvs,yvs)
 
 def update_boids(boids):
@@ -61,3 +66,4 @@ anim = animation.FuncAnimation(figure, animate,
 
 if __name__ == "__main__":
     plt.show()
+#	anim.save('boids_video.mp4')
