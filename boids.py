@@ -31,12 +31,16 @@ vel_y=-20
 vel_y=-20 
 attraction_index = 0.01
 speed_tuning_index = 0.125
+separation1=100
+separation2=10000
+
  
 xs = movement(min_x,max) 
 ys = movement(min_y,max)
 xvs = movement(min_vel_x,max_vel_x)
 yvs = movement(-vel_y,vel_y)
-boids =(xs,ys,xvs,yvs)
+boids=(xs,ys,xvs,yvs)
+#boids =["position_x":xs,"position_y":ys,"velocity_x":xvs,"velocity_y":yvs]
 
 def distance(a,i,j):
  b = a[i]-a[j]
@@ -47,16 +51,16 @@ def fly_towards_middle(a,b,i,j):
   return b
   
 def fly_away_from_neighbours(a,b,i,j):
-  b = a[i]+(distance(b,j,i))*attraction_index/len(xs)
+  b = a[i]+(distance(b,j,i))
   return b
   
-def match_speed_neighbours(a,b,i,j):
-  b = a[i]+(distance(b,j,i))*attraction_index/len(xs)
+def match_speed_neighbours(a,i,j):
+  b = a[i]+(distance(a,j,i))*speed_tuning_index/len(xs)
   return b
   
 def distance_square(a,b,i,j):
- b = (a[j]-a[i])**2 + (b[j]-b[i])**2
- return b
+  b = (a[j]-a[i])**2 + (b[j]-b[i])**2
+  return b
  
   
  
@@ -70,15 +74,15 @@ def update_boids(boids):
 	# Fly away from nearby boids
 	for i in range(len(xs)):
 		for j in range(len(xs)):
-			if (xs[j]-xs[i])**2 + (ys[j]-ys[i])**2 < 100:
-				xvs[i]=xvs[i]+(xs[i]-xs[j])
-				yvs[i]=yvs[i]+(ys[i]-ys[j])
+			if distance_square(xs,ys,i,j) < separation1:
+			 xvs[i]= fly_away_from_neighbours(xvs,xs,i,j)
+			 yvs[i]= fly_away_from_neighbours(yvs,ys,i,j)
 	# Try to match speed with nearby boids
 	for i in range(len(xs)):
 		for j in range(len(xs)):
-			if (xs[j]-xs[i])**2 + (ys[j]-ys[i])**2 < 10000:
-				xvs[i]=xvs[i]+(xvs[j]-xvs[i])*speed_tuning_index/len(xs)
-				yvs[i]=yvs[i]+(yvs[j]-yvs[i])*speed_tuning_index/len(xs)
+			if distance_square(xs,ys,i,j) < separation2:
+			   xvs[i]= match_speed_neighbours(xvs,i,j)
+			   yvs[i]= match_speed_neighbours(yvs,i,j)
 	# Move according to velocities
 	for i in range(len(xs)):
 		xs[i]=xs[i]+xvs[i]
