@@ -38,10 +38,26 @@ xvs = movement(min_vel_x,max_vel_x)
 yvs = movement(-vel_y,vel_y)
 boids =(xs,ys,xvs,yvs)
 
-def separation(a,i,j):
- a= []
+def distance(a,i,j):
  b = a[i]-a[j]
  return b 
+ 
+def fly_towards_middle(a,b,i,j):
+  b = a[i]+(distance(b,j,i))*attraction_index/len(xs)
+  return b
+  
+def fly_away_from_neighbours(a,b,i,j):
+  b = a[i]+(distance(b,j,i))*attraction_index/len(xs)
+  return b
+  
+def match_speed_neighbours(a,b,i,j):
+  b = a[i]+(distance(b,j,i))*attraction_index/len(xs)
+  return b
+  
+def distance_square(a,b,i,j):
+ b = (a[j]-a[i])**2 + (b[j]-b[i])**2
+ return b
+ 
   
  
 def update_boids(boids):
@@ -49,8 +65,8 @@ def update_boids(boids):
 	# Fly towards the middle
 	for i in range(len(xs)):
 		for j in range(len(xs)):
-			xvs[i]=xvs[i]+(separation(xs,j,i))*attraction_index/len(xs)  
-			yvs[i]=yvs[i]+(ys[j]-ys[i])*attraction_index/len(xs)
+			xvs[i]= fly_towards_middle(xvs,xs,i,j)
+			yvs[i]= fly_towards_middle(yvs,ys,i,j)
 	# Fly away from nearby boids
 	for i in range(len(xs)):
 		for j in range(len(xs)):
