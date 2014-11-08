@@ -15,16 +15,24 @@ import random
 
 
 
-def movement (a,b):       #con qualche commento che spiega?
+def movement (a,b):       
  r = []
  for k in range(50):
   r.append(random.uniform(a,b)) 
  return r
-  
-xs = movement(-450,50.0) 
-ys = movement(300.0,50.0)
-xvs = movement(0,10.0)
-yvs = movement(-20.0,20.0)
+
+min_x = -450
+min_y = 300 
+max = 50
+min_vel_x = 0
+max_vel_x = 10
+vel_y=-20
+vel_y=-20 
+ 
+xs = movement(min_x,max) 
+ys = movement(min_y,max)
+xvs = movement(min_vel_x,max_vel_x)
+yvs = movement(-vel_y,vel_y)
 boids =(xs,ys,xvs,yvs)
 
 def update_boids(boids):
@@ -66,4 +74,4 @@ anim = animation.FuncAnimation(figure, animate,
 
 if __name__ == "__main__":
     plt.show()
-#	anim.save('boids_video.mp4')
+
