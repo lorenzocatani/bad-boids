@@ -11,17 +11,19 @@ import random
 
 
 
-def movement (a,b):       con qualche commento che spiega?
-     random.uniform(a,b) for x in range(50)
-x = movement(-450,50.0) 
-y = movement(300.0,50.0)
-vel_x = movement(0,10.0)
-vel_y = movement(-20.0,20.0)
-x = movement(-450,50.0)
-boids =(x,y,vel_x,vel_y)
+def movement (a,b):       #con qualche commento che spiega?
+ r = random.uniform(a,b) 
+ for k in range(50):
+  return r
+  
+xs = [movement(-450,50.0)] 
+ys = [movement(300.0,50.0)]
+xvs = [movement(0,10.0)]
+yvs = [movement(-20.0,20.0)]
+boids =(xs,ys,xvs,yvs)
 
 def update_boids(boids):
-	xs,ys,xvs,yvs=boids
+	#xs,ys,xvs,yvs=boids
 	# Fly towards the middle
 	for i in range(len(xs)):
 		for j in range(len(xs)):
