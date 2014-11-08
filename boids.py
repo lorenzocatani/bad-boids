@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 from matplotlib import animation
 import random
 
+from numpy import array
 # Deliberately terrible code for teaching purposes
 
 
@@ -28,6 +29,8 @@ min_vel_x = 0
 max_vel_x = 10
 vel_y=-20
 vel_y=-20 
+attraction_index = 0.01
+speed_tuning_index = 0.125
  
 xs = movement(min_x,max) 
 ys = movement(min_y,max)
@@ -35,13 +38,19 @@ xvs = movement(min_vel_x,max_vel_x)
 yvs = movement(-vel_y,vel_y)
 boids =(xs,ys,xvs,yvs)
 
+def separation(a,i,j):
+ a= []
+ b = a[i]-a[j]
+ return b 
+  
+ 
 def update_boids(boids):
 	#xs,ys,xvs,yvs=boids
 	# Fly towards the middle
 	for i in range(len(xs)):
 		for j in range(len(xs)):
-			xvs[i]=xvs[i]+(xs[j]-xs[i])*0.01/len(xs)
-			yvs[i]=yvs[i]+(ys[j]-ys[i])*0.01/len(xs)
+			xvs[i]=xvs[i]+(separation(xs,j,i))*attraction_index/len(xs)  
+			yvs[i]=yvs[i]+(ys[j]-ys[i])*attraction_index/len(xs)
 	# Fly away from nearby boids
 	for i in range(len(xs)):
 		for j in range(len(xs)):
@@ -52,8 +61,8 @@ def update_boids(boids):
 	for i in range(len(xs)):
 		for j in range(len(xs)):
 			if (xs[j]-xs[i])**2 + (ys[j]-ys[i])**2 < 10000:
-				xvs[i]=xvs[i]+(xvs[j]-xvs[i])*0.125/len(xs)
-				yvs[i]=yvs[i]+(yvs[j]-yvs[i])*0.125/len(xs)
+				xvs[i]=xvs[i]+(xvs[j]-xvs[i])*speed_tuning_index/len(xs)
+				yvs[i]=yvs[i]+(yvs[j]-yvs[i])*speed_tuning_index/len(xs)
 	# Move according to velocities
 	for i in range(len(xs)):
 		xs[i]=xs[i]+xvs[i]
