@@ -25,6 +25,7 @@ attraction_index = 0.01
 speed_tuning_index = 0.125
 separation1=100
 separation2=10000
+boids_num = 50
 
 class boid(object):
  def __init__(self,x,y,xv,yv):
@@ -32,13 +33,11 @@ class boid(object):
   self.position_y=y
   self.velocity_x=xv
   self.velocity_y=yv
-
   
-boids=[boid(random.uniform(min_x,max) ,random.uniform(min_y,max),
-  random.uniform(min_vel_x,max_vel_x),random.uniform(-vel_y,vel_y)) for i in range(50)]
-
-boids_num = len(boids)  
-  
+ def distance_square(self,other):
+  d=(self.position_x - other.position_x)**2 + (self.position_y - other.position_y)**2
+  return d
+ 
 def distance(a,b):
  c = a-b
  return c
@@ -53,13 +52,18 @@ def fly_away_from_neighbours(a,b,d):
   
 def match_speed_neighbours(a,b):
   c = a +(distance(b,a))*speed_tuning_index/boids_num
-  return c
-  
-def distance_square(a,b,d,e):
-  c = (a-b)**2 + (d-e)**2
-  return c
+  return c 
  
+boids=[boid(random.uniform(min_x,max) ,random.uniform(min_y,max),
+  random.uniform(min_vel_x,max_vel_x),random.uniform(-vel_y,vel_y)) for i in range(boids_num)]
+
+ 
+
  #togliere i commenti??
+ #aggiusta test regression
+ #gli ultimi due sulle classi
+ #fai test
+ 
  
 def update_boids(boids): 
 	
@@ -68,18 +72,21 @@ def update_boids(boids):
 		for j in range(boids_num):
 		   boids[i].velocity_x = fly_towards_middle(boids[i].velocity_x,boids[j].position_x,boids[i].position_x)
 		   boids[i].velocity_y = fly_towards_middle(boids[i].velocity_y,boids[j].position_y,boids[i].position_y)
+		   
 	# Fly away from nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
-		    if distance_square(boids[j].position_x,boids[i].position_x,boids[j].position_y,boids[i].position_y) < separation1:
+		    if boids[j].distance_square(boids[i]) < separation1:
 			boids[i].velocity_x = fly_away_from_neighbours(boids[i].velocity_x,boids[i].position_x,boids[j].position_x)
 		        boids[i].velocity_y = fly_away_from_neighbours(boids[i].velocity_y,boids[i].position_y,boids[j].position_y)
+				
 	# Try to match speed with nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
-			if distance_square(boids[j].position_x,boids[i].position_x,boids[j].position_y,boids[i].position_y) < separation2:
+			if boids[j].distance_square(boids[i]) < separation2:
 			 boids[i].velocity_x = match_speed_neighbours(boids[i].velocity_x,boids[j].velocity_x)
 		         boids[i].velocity_y = match_speed_neighbours(boids[i].velocity_y,boids[j].velocity_y)
+				 
 	# Move according to velocities
 	for i in range(len(boids)):
 		boids[i].position_x =boids[i].position_x + boids[i].velocity_x
