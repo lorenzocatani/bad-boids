@@ -26,6 +26,7 @@ speed_tuning_index = 0.125
 separation1=100
 separation2=10000
 
+
  
 
 #class boids (object):
@@ -38,12 +39,14 @@ separation2=10000
 boids=[{"position_x":random.uniform(min_x,max) ,"position_y":random.uniform(min_y,max),
   "velocity_x":random.uniform(min_vel_x,max_vel_x),"velocity_y":random.uniform(-vel_y,vel_y)} for i in range(50)]
 
+boids_num = len(boids)  
+  
 def distance(a,b):
  c = a-b
  return c
  
 def fly_towards_middle(a,b,d):
-  c = a+(distance(b,d))*attraction_index/len(x)
+  c = a+(distance(b,d))*attraction_index/boids_num
   return c
   
 def fly_away_from_neighbours(a,b,d):
@@ -51,7 +54,7 @@ def fly_away_from_neighbours(a,b,d):
   return c
   
 def match_speed_neighbours(a,b):
-  c = a +(distance(b,a))*speed_tuning_index/len(x)
+  c = a +(distance(b,a))*speed_tuning_index/boids_num
   return c
   
 def distance_square(a,b,d,e):
@@ -63,33 +66,39 @@ def distance_square(a,b,d,e):
 def update_boids(boids): 
 	
 	# Fly towards the middle
-	for i in range(len(boids)):
-		for j in range(len(boids)):
-		boids[i]["velocity_x"] = fly_towards_middle(boids[i]["velocity_x"],boids[j]["position_x"],boids[i]["position_x"])
-		boids[i]["velocity_y"] = fly_towards_middle(boids[i]["velocity_y"],boids[j]["position_y"],boids[i]["position_y"])
-	for i in range(len(x)):
-		for j in range(len(x)):
-			if distance_square(,boids[j]["position_x"],,boids[i]["position_x"],,boids[j]["position_y"],,boids[i]["position_y"]) < separation1:
-			 boids[i]["velocity_x"] = fly_away_from_neighbours(boids[i]["velocity_x"],boids[i]["position_x"],boids[j]["position_x"])
-		     boids[i]["velocity_y"] = fly_away_from_neighbours(boids[i]["velocity_y"],boids[i]["position_y"],boids[j]["position_y"])
+	for i in range(boids_num):
+		for j in range(boids_num):
+		   boids[i]["velocity_x"] = fly_towards_middle(boids[i]["velocity_x"],boids[j]["position_x"],boids[i]["position_x"])
+		   boids[i]["velocity_y"] = fly_towards_middle(boids[i]["velocity_y"],boids[j]["position_y"],boids[i]["position_y"])
+	# Fly away from nearby boids
+	for i in range(boids_num):
+		for j in range(boids_num):
+		    if distance_square(boids[j]["position_x"],boids[i]["position_x"],boids[j]["position_y"],boids[i]["position_y"]) < separation1:
+			boids[i]["velocity_x"] = fly_away_from_neighbours(boids[i]["velocity_x"],boids[i]["position_x"],boids[j]["position_x"])
+		        boids[i]["velocity_y"] = fly_away_from_neighbours(boids[i]["velocity_y"],boids[i]["position_y"],boids[j]["position_y"])
 	# Try to match speed with nearby boids
-	for i in range(len(boids)):
-		for j in range(len(boids)):
-			if distance_square(,boids[j]["position_x"],,boids[i]["position_x"],,boids[j]["position_y"],,boids[i]["position_y"]) < separation2:
-			   boids[i]["velocity_x"] = match_speed_neighbours(boids[i]["velocity_x"],boids[j]["velocity_x"])
-		       boids[i]["velocity_y"] = match_speed_neighbours(boids[i]["velocity_y"],boids[j]["velocity_y"])
+	for i in range(boids_num):
+		for j in range(boids_num):
+			if distance_square(boids[j]["position_x"],boids[i]["position_x"],boids[j]["position_y"],boids[i]["position_y"]) < separation2:
+			 boids[i]["velocity_x"] = match_speed_neighbours(boids[i]["velocity_x"],boids[j]["velocity_x"])
+		         boids[i]["velocity_y"] = match_speed_neighbours(boids[i]["velocity_y"],boids[j]["velocity_y"])
 	# Move according to velocities
 	for i in range(len(boids)):
 		boids[i]["position_x"] =boids[i]["position_x"] + boids[i]["velocity_x"]
 		boids[i]["position_y"] =boids[i]["position_y"] + boids[i]["velocity_y"]
 
+positions_x = [boids[i]["position_x"] for i in range(50)]
+positions_y = [boids[i]["position_y"] for i in range(50)]
+
 figure=plt.figure()
 axes=plt.axes(xlim=(-500,1500), ylim=(-500,1500))
-scatter=axes.scatter(boids[0],boids[1])
+scatter=axes.scatter(positions_x,positions_y)
 
 def animate(frame):
+   positions_x = [boids[i]["position_x"] for i in range(50)]
+   positions_y = [boids[i]["position_y"] for i in range(50)]
    update_boids(boids)
-   scatter.set_offsets(zip(boids[0],boids[1]))
+   scatter.set_offsets(zip(positions_x,positions_y))
 
 
 anim = animation.FuncAnimation(figure, animate,
