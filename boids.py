@@ -61,10 +61,6 @@ boids=[boid(random.uniform(c['min_x'],c['max_x']) ,random.uniform(c['min_y'],c['
   random.uniform(c['min_vel_x'],c['max_vel_x']),random.uniform(c['min_vel_y'],c['max_vel_y'])) for i in range(c['boids_num'])]
 
  
- #replace global variable with function argument?
- #gli ultimi due sulle classi
- #fai test
- 
  
 def update_boids(boids): 
 	
@@ -94,6 +90,7 @@ def update_boids(boids):
 		boid.position_y = boid.position_y + boid.velocity_y
 
 		
+# view boids
 		
 positions_x = [boids[i].position_x for i in range(50)]
 positions_y = [boids[i].position_y for i in range(50)]
