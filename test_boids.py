@@ -1,5 +1,5 @@
 from boids import update_boids, boid
-from nose.tools import assert_almost_equal
+from nose.tools import assert_almost_equal,assert_equal
 import os
 import yaml
 
@@ -19,12 +19,50 @@ def test_bad_boids_regression():
 	    assert_almost_equal(new_boid_data_aft[i].velocity_x,new_boid_data_bef[i].velocity_x,delta=0.01)
 	    assert_almost_equal(new_boid_data_aft[i].velocity_y,new_boid_data_bef[i].velocity_y,delta=0.01)
 	        
-	  
-	  
-	  #for j in range(4):
-	  #for after,before in zip(new_boid_data_aft[i][0],new_boid_data_bef[i][0]):
-             #for after_value,before_value in zip(after,before): 
-               # assert_almost_equal(after_value,before_value,delta=0.01)
+	 
+	 
+
+def test_fly_towards_middle_x():
+        boid1 = boid(2,5,7,9)
+	boid2 = boid(3,4,7,2)  
+	value = boid.fly_towards_middle_x(boid1,boid2)
+	expected =7
+	assert_almost_equal(value,expected,delta=0.01)
+	
+def test_fly_towards_middle_y():
+        boid1 = boid(2,5,7,9)
+	boid2 = boid(3,4,7,2)  
+	value = boid.fly_towards_middle_y(boid1,boid2)
+	expected =9
+	assert_almost_equal(value,expected,delta=0.01)
+	
+def test_fly_away_from_neighbours_x():
+        boid1 = boid(2,5,7,9)
+	boid2 = boid(3,4,7,2)  
+	value = boid.fly_away_from_neighbours_x(boid1,boid2)
+	expected =6
+	assert_equal(value,expected)
+	
+def test_fly_away_from_neighbours_y():
+        boid1 = boid(2,5,7,9)
+	boid2 = boid(3,4,7,2)  
+	value = boid.fly_away_from_neighbours_y(boid1,boid2)
+	expected =10
+	assert_equal(value,expected)
+	
+def test_match_speed_neighbours_x():
+        boid1 = boid(2,5,7,9)
+	boid2 = boid(3,4,7,2)  
+	value = boid.match_speed_neighbours_x(boid1,boid2)
+	expected =7
+	assert_almost_equal(value,expected,delta=0.01)
+	
+def test_match_speed_neighbours_y():
+        boid1 = boid(2,5,7,5)
+	boid2 = boid(3,2,7,2)  
+	value = boid.match_speed_neighbours_y(boid1,boid2)
+	expected =5
+	assert_almost_equal(value,expected,delta=0.01)
 	
 
 	
