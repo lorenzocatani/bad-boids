@@ -2,7 +2,7 @@
 A deliberately bad implementation of [Boids](http://dl.acm.org/citation.cfm?doid=37401.37406)
 for use as an exercise on refactoring.
 """
-
+import yaml
 import matplotlib
 
 matplotlib.use('TkAgg')
@@ -14,13 +14,15 @@ import random
 from numpy import array
 # Deliberately terrible code for teaching purposes
 
-min_x = -450   #configuration file for these constants?
+#c=yaml.load(open("config.yaml"))
+
+min_x = -450   
 min_y = 300 
 max_x = 50
 max_y=600
-min_vel_x = 0    #replace global variable with function argument?
+min_vel_x = 0    
 max_vel_x = 10
-vel_y=20 
+vel_y = 20 
 attraction_index = 0.01  
 speed_tuning_index = 0.125
 separation1=100
@@ -38,26 +40,37 @@ class boid(object):
   d=(self.position_x - other.position_x)**2 + (self.position_y - other.position_y)**2
   return d
  
+ def fly_towards_middle_x(self,other):
+  separation=other.position_x - self.position_x
+  self.velocity_x = self.velocity_x + (separation)*attraction_index/boids_num
+  return self.velocity_x
+ def fly_towards_middle_y(self,other):
+  separation=other.position_y - self.position_y
+  self.velocity_y = self.velocity_y + (separation)*attraction_index/boids_num
+  return self.velocity_y
  
-def fly_towards_middle(a,b,d):
-  a = a+(b-d)*attraction_index/boids_num
-  return a
+ def fly_away_from_neighbours_x(self,other):
+  self.velocity_x = self.velocity_x + (self.position_x - other.position_x)
+  return self.velocity_x
+ def fly_away_from_neighbours_y(self,other):
+  self.velocity_y = self.velocity_y + (self.position_y - other.position_y)
+  return self.velocity_y
   
-def fly_away_from_neighbours(a,b,d):
-  a = a + b-d
-  return a
+ def match_speed_neighbours_x(self,other):
+  self.velocity_x = self.velocity_x +(other.velocity_x-self.velocity_x)*speed_tuning_index/boids_num
+  return self.velocity_x 
+ def match_speed_neighbours_y(self,other):
+  self.velocity_y = self.velocity_y +(other.velocity_y-self.velocity_y)*speed_tuning_index/boids_num
+  return self.velocity_y 
   
-def match_speed_neighbours(a,b):
-  a = a +(b-a)*speed_tuning_index/boids_num
-  return a 
+  
  
 boids=[boid(random.uniform(min_x,max_x) ,random.uniform(min_y,max_y),
   random.uniform(min_vel_x,max_vel_x),random.uniform(-vel_y,vel_y)) for i in range(boids_num)]
 
  
-
+ #replace global variable with function argument?
  #togliere i commenti??
- #aggiusta test regression
  #gli ultimi due sulle classi
  #fai test
  
@@ -65,25 +78,25 @@ boids=[boid(random.uniform(min_x,max_x) ,random.uniform(min_y,max_y),
 def update_boids(boids): 
 	
 	# Fly towards the middle
-	for i in range(boids_num):
+	for i in range(boids_num): #for boid in boids
 		for j in range(boids_num):
-		   boids[i].velocity_x = fly_towards_middle(boids[i].velocity_x,boids[j].position_x,boids[i].position_x)
-		   boids[i].velocity_y = fly_towards_middle(boids[i].velocity_y,boids[j].position_y,boids[i].position_y)
+		   boids[i].fly_towards_middle_x(boids[j])
+		   boids[i].fly_towards_middle_y(boids[j])
 		   
 	# Fly away from nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
 		    if  boids[j].distance_square(boids[i]) < separation1:
-			 boids[i].velocity_x = fly_away_from_neighbours(boids[i].velocity_x,boids[i].position_x,boids[j].position_x)
-		         boids[i].velocity_y = fly_away_from_neighbours(boids[i].velocity_y,boids[i].position_y,boids[j].position_y)
+		     boids[i].fly_away_from_neighbours_x(boids[j])
+	             boids[i].fly_away_from_neighbours_y(boids[j])
 				 
 	# Try to match speed with nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
 			if boids[j].distance_square(boids[i]) < separation2:
-			 boids[i].velocity_x = match_speed_neighbours(boids[i].velocity_x,boids[j].velocity_x)
-		         boids[i].velocity_y = match_speed_neighbours(boids[i].velocity_y,boids[j].velocity_y)
-				 
+			 boids[i].match_speed_neighbours_x(boids[j])
+	                 boids[i].match_speed_neighbours_y(boids[j])
+					 
 	# Move according to velocities
 	for i in range(boids_num):
 		boids[i].position_x = boids[i].position_x + boids[i].velocity_x
