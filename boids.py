@@ -73,20 +73,16 @@ def update_boids(boids):
 	# Fly away from nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
-		    if  (boids[j].position_x-boids[i].position_x)**2 + (boids[j].position_y-boids[i].position_y)**2 < separation1:
-			 boids[i].velocity_x=boids[i].velocity_x+(boids[i].position_x-boids[j].position_x)
-			 boids[i].velocity_y=boids[i].velocity_y+(boids[i].position_y-boids[j].position_y)
-			 #boids[i].velocity_x = fly_away_from_neighbours(boids[i].velocity_x,boids[i].position_x,boids[j].position_x)
-		         #boids[i].velocity_y = fly_away_from_neighbours(boids[i].velocity_y,boids[i].position_y,boids[j].position_y)
-				#boids[j].distance_square(boids[i])
+		    if  boids[j].distance_square(boids[i]) < separation1:
+			 boids[i].velocity_x = fly_away_from_neighbours(boids[i].velocity_x,boids[i].position_x,boids[j].position_x)
+		         boids[i].velocity_y = fly_away_from_neighbours(boids[i].velocity_y,boids[i].position_y,boids[j].position_y)
+				 
 	# Try to match speed with nearby boids
 	for i in range(boids_num):
 		for j in range(boids_num):
-			if (boids[j].position_x-boids[i].position_x)**2 + (boids[j].position_y-boids[i].position_y)**2 < separation2:
-			 boids[i].velocity_x=boids[i].velocity_x+(boids[j].velocity_x - boids[i].velocity_x)*0.125/50
-			 boids[i].velocity_y=boids[i].velocity_y+(boids[j].velocity_y - boids[i].velocity_y)*0.125/50
-			 #boids[i].velocity_x = match_speed_neighbours(boids[i].velocity_x,boids[j].velocity_x)
-		      #   boids[i].velocity_y = match_speed_neighbours(boids[i].velocity_y,boids[j].velocity_y)
+			if boids[j].distance_square(boids[i]) < separation2:
+			 boids[i].velocity_x = match_speed_neighbours(boids[i].velocity_x,boids[j].velocity_x)
+		         boids[i].velocity_y = match_speed_neighbours(boids[i].velocity_y,boids[j].velocity_y)
 				 
 	# Move according to velocities
 	for i in range(boids_num):
