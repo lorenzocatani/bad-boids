@@ -1,0 +1,13 @@
+  min_x: -450   
+  min_y: 300 
+  max_x: 50
+  max_y: 600
+  min_vel_x: 0    
+  max_vel_x: 10
+  min_vel_y: -20 
+  max_vel_y: 20
+  attraction_index: 0.01  
+  speed_tuning_index: 0.125
+  separation1: 100
+  separation2: 10000
+  boids_num: 50
