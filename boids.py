@@ -37,30 +37,34 @@ class boid(object):
   self.velocity_y=yv
   
  def distance_square(self,other):
-  d=(self.position_x - other.position_x)**2 + (self.position_y - other.position_y)**2
+  d = (self.position_x - other.position_x)**2 + (self.position_y - other.position_y)**2
   return d
  
  def fly_towards_middle_x(self,other):
-  separation=other.position_x - self.position_x
+  separation = other.position_x - self.position_x
   self.velocity_x = self.velocity_x + (separation)*attraction_index/boids_num
   return self.velocity_x
  def fly_towards_middle_y(self,other):
-  separation=other.position_y - self.position_y
+  separation = other.position_y - self.position_y
   self.velocity_y = self.velocity_y + (separation)*attraction_index/boids_num
   return self.velocity_y
  
  def fly_away_from_neighbours_x(self,other):
-  self.velocity_x = self.velocity_x + (self.position_x - other.position_x)
+  separation = self.position_x - other.position_x
+  self.velocity_x = self.velocity_x + (separation)
   return self.velocity_x
  def fly_away_from_neighbours_y(self,other):
-  self.velocity_y = self.velocity_y + (self.position_y - other.position_y)
+  separation = self.position_y - other.position_y
+  self.velocity_y = self.velocity_y + (separation)
   return self.velocity_y
   
  def match_speed_neighbours_x(self,other):
-  self.velocity_x = self.velocity_x +(other.velocity_x-self.velocity_x)*speed_tuning_index/boids_num
+  separation = other.velocity_x-self.velocity_x
+  self.velocity_x = self.velocity_x +(separation)*speed_tuning_index/boids_num
   return self.velocity_x 
  def match_speed_neighbours_y(self,other):
-  self.velocity_y = self.velocity_y +(other.velocity_y-self.velocity_y)*speed_tuning_index/boids_num
+  separation = other.velocity_y-self.velocity_y
+  self.velocity_y = self.velocity_y +(separation)*speed_tuning_index/boids_num
   return self.velocity_y 
   
   
@@ -78,29 +82,29 @@ boids=[boid(random.uniform(min_x,max_x) ,random.uniform(min_y,max_y),
 def update_boids(boids): 
 	
 	# Fly towards the middle
-	for i in range(boids_num): #for boid in boids
-		for j in range(boids_num):
-		   boids[i].fly_towards_middle_x(boids[j])
-		   boids[i].fly_towards_middle_y(boids[j])
+	for boid1 in boids:
+	    for boid2 in boids:
+	      boid1.fly_towards_middle_x(boid2)
+              boid1.fly_towards_middle_y(boid2)
 		   
 	# Fly away from nearby boids
-	for i in range(boids_num):
-		for j in range(boids_num):
-		    if  boids[j].distance_square(boids[i]) < separation1:
-		     boids[i].fly_away_from_neighbours_x(boids[j])
-	             boids[i].fly_away_from_neighbours_y(boids[j])
+	for boid1 in boids:
+	    for boid2 in boids:
+		    if  boid2.distance_square(boid1) < separation1:
+		     boid1.fly_away_from_neighbours_x(boid2)
+	             boid1.fly_away_from_neighbours_y(boid2)
 				 
 	# Try to match speed with nearby boids
-	for i in range(boids_num):
-		for j in range(boids_num):
-			if boids[j].distance_square(boids[i]) < separation2:
-			 boids[i].match_speed_neighbours_x(boids[j])
-	                 boids[i].match_speed_neighbours_y(boids[j])
+	for boid1 in boids:
+	    for boid2 in boids:
+			if boid2.distance_square(boid1) < separation2:
+			 boid1.match_speed_neighbours_x(boid2)
+	                 boid1.match_speed_neighbours_y(boid2)
 					 
 	# Move according to velocities
-	for i in range(boids_num):
-		boids[i].position_x = boids[i].position_x + boids[i].velocity_x
-		boids[i].position_y = boids[i].position_y + boids[i].velocity_y
+	for boid in boids:
+		boid.position_x = boid.position_x + boid.velocity_x
+		boid.position_y = boid.position_y + boid.velocity_y
 
 positions_x = [boids[i].position_x for i in range(50)]
 positions_y = [boids[i].position_y for i in range(50)]
