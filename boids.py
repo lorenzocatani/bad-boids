@@ -9,41 +9,59 @@ from numpy import array
 # Will now add an Eagle to Boids
 
 class Boid(object):
-    def __init__(self,x,y,xv,yv,owner,species="Starling"):
+    def __init__(self,x,y,xv,yv,owner):
         self.position=array([x,y])
         self.velocity=array([xv,yv])
         self.owner=owner
-        self.species=species
+        
+		
+class Eagle(Boid): #sennò sottoclasse di starling?? però poi l'if di starling...
+ def __init__(self,x,y,xv,yv,owner):
+   super(Boid, self).__init__(x,y,xv,yv,owner)
+   
+ def interaction(self,other):
+   delta_v=array([0.0,0.0]) # queste poi le dovrò definire solo nella classe Boid.
+   separation=other.position-self.position
+   
+   # Hunt the boids
+   delta_v+=separation*self.owner.eagle_hunt_strength
+   
+   return delta_v
 
-    def interaction(self,other):
-        delta_v=array([0.0,0.0])
-        separation=other.position-self.position
-        separation_sq=separation.dot(separation)
- 
-        if other.species=="Eagle":
-            # Flee the Eagle
-            if separation_sq < self.owner.eagle_avoidance_radius**2:
-                delta_v-=(separation*self.owner.eagle_fear)/separation.dot(separation)
-                return delta_v
+				
+class Starling(Boid):
+ def __init__(self,x,y,xv,yv,owner):
+   super(Boid, self).__init__(x,y,xv,yv,owner)
 
-        if self.species=="Eagle":
-            # Hunt the boids
-            delta_v+=separation*self.owner.eagle_hunt_strength
-        else:
-            # Fly towards the middle
-            delta_v+=separation*self.owner.flock_attraction
+   
+ def interaction(self,other):
+   delta_v=array([0.0,0.0])
+   separation=other.position-self.position
+   separation_sq=separation.dot(separation)
+   
+   if other.isclass(Eagle):
+   # Flee the Eagle
+        if separation_sq < self.owner.eagle_avoidance_radius**2:
+           delta_v-=(separation*self.owner.eagle_fear)/separation.dot(separation)
+           return delta_v
+         
+   else:
+      # Fly towards the middle
+      delta_v+=separation*self.owner.flock_attraction
             
-            # Fly away from nearby boids
-            if separation_sq < self.owner.avoidance_radius**2:
-                delta_v-=separation
+      # Fly away from nearby boids
+      if separation_sq < self.owner.avoidance_radius**2:
+        delta_v-=separation
 
-            # Try to match speed with nearby boids
-            if separation_sq < self.owner.formation_flying_radius**2:
-                delta_v+=(other.velocity-self.velocity)*self.owner.speed_matching_strength
+      # Try to match speed with nearby boids
+      if separation_sq < self.owner.formation_flying_radius**2:
+        delta_v+=(other.velocity-self.velocity)*self.owner.speed_matching_strength
+	
+	
+   return delta_v
+	
 
-        return delta_v
-
-
+				
 # Deliberately terrible code for teaching purposes
 class Boids(object):
     def __init__(self,
@@ -66,7 +84,7 @@ class Boids(object):
                 random.uniform(-20.0,20.0),self) for i in range(count)]
 
     def add_eagle(self,x,y,xv,yv):
-        self.boids.append(Boid(x,y,xv,yv,self,species="Eagle"))
+        self.boids.append(Eagle().(x,y,xv,yv,self)) # come si richiama il costruttore di una subclass???
 
     def initialise_from_data(self,data):
         self.boids=[Boid(x,y,xv,yv,self) for x,y,xv,yv in zip(*data)]
