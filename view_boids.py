@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 
-from boids import Boids
+from boids import Boids,Eagle
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
@@ -21,7 +21,7 @@ axes=plt.axes(xlim=(-2000,1500), ylim=(-500,4000))
 scatter=axes.scatter([b.position[0] for b in boids.boids],[b.position[1] for b in boids.boids])
 
 def color(boid):
-	if boid.species=="Eagle":
+	if isinstance(boid,Eagle):
 		return (1,0,0)
 	return (0,0,1)
 
