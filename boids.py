@@ -5,7 +5,6 @@ for use as an exercise on refactoring.
 
 import random
 from numpy import array
-import types
 
 # Will now add an Eagle to Boids
 
@@ -15,7 +14,6 @@ class Boid(object):
         self.velocity=array([xv,yv])
         self.owner=owner
 		
- 
     def separation (self,other):
 	distance = other.position-self.position
 	return distance
@@ -26,9 +24,7 @@ class Boid(object):
 	
   		
 class Eagle(Boid): 
-    #def __init__(self,x,y,xv,yv,owner):
-     #super(Boid, self).__init__(x,y,xv,yv,owner)
-   
+
     def interaction(self,other):
      delta_v=array([0.0,0.0]) 
      # Hunt the boids
@@ -38,10 +34,7 @@ class Eagle(Boid):
 
 				
 class Starling(Boid):
-# def __init__(self,x,y,xv,yv,owner):
-  # super(Boid, self).__init__(x,y,xv,yv,owner)
 
-   
  def interaction(self,other):
    delta_v=array([0.0,0.0])
    
@@ -68,7 +61,7 @@ class Starling(Boid):
 	
 
 				
-# Deliberately terrible code for teaching purposes
+
 class Boids(object):
     def __init__(self,
            flock_attraction,avoidance_radius,
