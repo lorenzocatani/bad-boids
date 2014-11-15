@@ -5,6 +5,7 @@ for use as an exercise on refactoring.
 
 import random
 from numpy import array
+import types
 
 # Will now add an Eagle to Boids
 
@@ -13,48 +14,53 @@ class Boid(object):
         self.position=array([x,y])
         self.velocity=array([xv,yv])
         self.owner=owner
-        
 		
-class Eagle(Boid): #sennò sottoclasse di starling?? però poi l'if di starling...
- def __init__(self,x,y,xv,yv,owner):
-   super(Boid, self).__init__(x,y,xv,yv,owner)
+ 
+    def separation (self,other):
+	distance = other.position-self.position
+	return distance
+	
+    def separation_sq (self,other):
+	distance_sq=self.separation(other).dot(self.separation(other))
+	return distance_sq
+	
+  		
+class Eagle(Boid): 
+    #def __init__(self,x,y,xv,yv,owner):
+     #super(Boid, self).__init__(x,y,xv,yv,owner)
    
- def interaction(self,other):
-   delta_v=array([0.0,0.0]) # queste poi le dovrò definire solo nella classe Boid.
-   separation=other.position-self.position
+    def interaction(self,other):
+     delta_v=array([0.0,0.0]) 
+     # Hunt the boids
+     delta_v+=self.separation(other)*self.owner.eagle_hunt_strength
    
-   # Hunt the boids
-   delta_v+=separation*self.owner.eagle_hunt_strength
-   
-   return delta_v
+     return delta_v
 
 				
 class Starling(Boid):
- def __init__(self,x,y,xv,yv,owner):
-   super(Boid, self).__init__(x,y,xv,yv,owner)
+# def __init__(self,x,y,xv,yv,owner):
+  # super(Boid, self).__init__(x,y,xv,yv,owner)
 
    
  def interaction(self,other):
    delta_v=array([0.0,0.0])
-   separation=other.position-self.position
-   separation_sq=separation.dot(separation)
    
-   if other.isclass(Eagle):
+   if isinstance(other,Eagle):
    # Flee the Eagle
-        if separation_sq < self.owner.eagle_avoidance_radius**2:
-           delta_v-=(separation*self.owner.eagle_fear)/separation.dot(separation)
+        if self.separation_sq(other) < self.owner.eagle_avoidance_radius**2:
+           delta_v-=(self.separation(other)*self.owner.eagle_fear)/self.separation(other).dot(self.separation(other))
            return delta_v
          
    else:
       # Fly towards the middle
-      delta_v+=separation*self.owner.flock_attraction
+      delta_v+=self.separation(other)*self.owner.flock_attraction
             
       # Fly away from nearby boids
-      if separation_sq < self.owner.avoidance_radius**2:
-        delta_v-=separation
+      if self.separation_sq(other) < self.owner.avoidance_radius**2:
+        delta_v-=self.separation(other)
 
       # Try to match speed with nearby boids
-      if separation_sq < self.owner.formation_flying_radius**2:
+      if self.separation_sq(other) < self.owner.formation_flying_radius**2:
         delta_v+=(other.velocity-self.velocity)*self.owner.speed_matching_strength
 	
 	
@@ -78,16 +84,16 @@ class Boids(object):
 
 
     def initialise_random(self,count):
-        self.boids=[Boid(random.uniform(-450,50.0),
+        self.boids=[Starling(random.uniform(-450,50.0),
                 random.uniform(300.0,600.0),
                 random.uniform(0,10.0),
                 random.uniform(-20.0,20.0),self) for i in range(count)]
 
     def add_eagle(self,x,y,xv,yv):
-        self.boids.append(Eagle().(x,y,xv,yv,self)) # come si richiama il costruttore di una subclass???
+        self.boids.append(Eagle(x,y,xv,yv,self))
 
     def initialise_from_data(self,data):
-        self.boids=[Boid(x,y,xv,yv,self) for x,y,xv,yv in zip(*data)]
+        self.boids=[Starling(x,y,xv,yv,self) for x,y,xv,yv in zip(*data)]
 
     def update(self):
         for me in self.boids:
@@ -99,4 +105,5 @@ class Boids(object):
             # Move according to velocities
             me.position+=me.velocity
 
+			
 
